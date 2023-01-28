@@ -1,3 +1,5 @@
+using BussinesLogic.Repository;
+using BussinesLogic.Repository.IRepository;
 using DataAccess.Data;
 using HiddenVilla.Server.Data;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
