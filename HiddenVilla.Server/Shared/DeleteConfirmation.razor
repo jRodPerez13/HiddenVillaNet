@@ -1,0 +1,57 @@
+﻿<div class="modal fade" data-backdrop="static" data-keyboard="false" id="deleteConfirmationModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog  modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        @onclick="()=>OnConfirmationChange(false)">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="()=>OnConfirmationChange(false)">
+                    Cancel
+                </button>
+
+                @if (isProccesStart)
+                {
+                    <btn class="btn btn-danger" type="button"><i class="fa fa-spin fa-spinner"></i>Processing...</btn>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-danger" @onclick="()=>OnConfirmationChange(true)">
+                        Delete
+                    </button>
+                }
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    public bool isProccesStart { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<bool> ConfirmationChanged { get; set; }
+
+    [Parameter]
+    public bool ParentComponentIsProcessing { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        isProccesStart = ParentComponentIsProcessing;
+    }
+
+    protected async Task OnConfirmationChange(bool value)
+    {
+        if (value)
+        {
+            isProccesStart = true;
+        }
+        await ConfirmationChanged.InvokeAsync(value);
+    }
+}

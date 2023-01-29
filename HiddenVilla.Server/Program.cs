@@ -2,6 +2,8 @@ using BussinesLogic.Repository;
 using BussinesLogic.Repository.IRepository;
 using DataAccess.Data;
 using HiddenVilla.Server.Data;
+using HiddenVilla.Server.Service;
+using HiddenVilla.Server.Service.IService;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,8 +14,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
+builder.Services.AddScoped<IHotelImagesRepository, HotelImagesRepository>();
+builder.Services.AddScoped<IHotelAmenityRepository, HotelAmenityRepository>();
+builder.Services.AddScoped<IFileUpload, FileUpload>();
 
 builder.Services.AddRazorPages();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 

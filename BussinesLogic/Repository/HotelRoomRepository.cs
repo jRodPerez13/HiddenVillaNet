@@ -10,18 +10,17 @@ public class HotelRoomRepository : IHotelRoomRepository
 {
     private readonly ApplicationDbContext _db;
     private readonly IMapper _mapper;
-
     public HotelRoomRepository(ApplicationDbContext db, IMapper mapper)
     {
         _mapper = mapper;
         _db = db;
     }
+
     public async Task<HotelRoomDTO> CreateHotelRoom(HotelRoomDTO hotelRoomDTO)
     {
         HotelRoom hotelRoom = _mapper.Map<HotelRoomDTO, HotelRoom>(hotelRoomDTO);
         hotelRoom.CreatedDate = DateTime.Now;
-        //hotelRoom.CreatedBy = "";
-        //hotelRoom.UpdatedBy = "";
+        hotelRoom.UpdatedBy = "";
         var AddHotelRoom = await _db.HotelRooms.AddAsync(hotelRoom);
         await _db.SaveChangesAsync();
         return _mapper.Map<HotelRoom, HotelRoomDTO>(AddHotelRoom.Entity);
@@ -29,21 +28,27 @@ public class HotelRoomRepository : IHotelRoomRepository
 
     public async Task<int> DeleteHotelRoom(int roomId)
     {
+
         HotelRoom roomDetails = await _db.HotelRooms.FindAsync(roomId);
         if (roomDetails != null)
         {
+            var allImages = await _db.HotelRoomImages.Where(x => x.RoomId == roomId).ToListAsync();
+
+            _db.HotelRoomImages.RemoveRange(allImages);
             _db.HotelRooms.Remove(roomDetails);
             return await _db.SaveChangesAsync();
         }
         return 0;
     }
+
     public async Task<IEnumerable<HotelRoomDTO>> GetAllHotelRooms()
     {
         try
         {
-            IEnumerable<HotelRoomDTO> hotelRoomDTO =
-                _mapper.Map<IEnumerable<HotelRoom>, IEnumerable<HotelRoomDTO>>(_db.HotelRooms);
-            return hotelRoomDTO;
+            IEnumerable<HotelRoomDTO> hotelRoomDTOs =
+             _mapper.Map<IEnumerable<HotelRoom>, IEnumerable<HotelRoomDTO>>(
+                 _db.HotelRooms.Include(x => x.HotelRoomImages));
+            return hotelRoomDTOs;
         }
         catch (Exception ex)
         {
@@ -56,7 +61,7 @@ public class HotelRoomRepository : IHotelRoomRepository
         try
         {
             HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>
-                (await _db.HotelRooms.FirstOrDefaultAsync(x => x.Id == roomId));
+                (await _db.HotelRooms.Include(x => x.HotelRoomImages).FirstOrDefaultAsync(x => x.Id == roomId));
             return hotelRoom;
         }
         catch (Exception ex)
@@ -66,19 +71,29 @@ public class HotelRoomRepository : IHotelRoomRepository
     }
 
     //If unique return null else return the room obj
-    public async Task<HotelRoomDTO> IsRoomUnique(string Name)
+    public async Task<HotelRoomDTO> IsRoomUnique(string Name, int roomId = 0)
     {
         try
         {
-            HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>
-                (await _db.HotelRooms.FirstOrDefaultAsync(x => x.Name.ToLower() == Name.ToLower()));
-            return hotelRoom;
+            if (roomId == 0)
+            {
+                HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>
+                    (await _db.HotelRooms.FirstOrDefaultAsync(x => x.Name.ToLower() == Name.ToLower()));
+                return hotelRoom;
+            }
+            else
+            {
+                HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>
+                         (await _db.HotelRooms.FirstOrDefaultAsync(x => x.Name.ToLower() == Name.ToLower() && x.Id != roomId));
+                return hotelRoom;
+            }
         }
         catch (Exception ex)
         {
             return null;
         }
     }
+
     public async Task<HotelRoomDTO> UpdateHotelRoom(int roomId, HotelRoomDTO hotelRoomDTO)
     {
         try
@@ -105,7 +120,4 @@ public class HotelRoomRepository : IHotelRoomRepository
             return null;
         }
     }
-
 }
-
-
