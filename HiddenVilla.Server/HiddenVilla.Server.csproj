@@ -26,6 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\CommonFiles\CommonFiles.csproj" />
 		<ProjectReference Include="..\DataAccess\DataAccess.csproj" />
 		<ProjectReference Include="..\BussinesLogic\BussinesLogic.csproj" />
 		<ProjectReference Include="..\Models\Models.csproj" />
