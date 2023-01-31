@@ -25,6 +25,7 @@ builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
 builder.Services.AddScoped<IHotelImagesRepository, HotelImagesRepository>();
 builder.Services.AddScoped<IHotelAmenityRepository, HotelAmenityRepository>();
 builder.Services.AddScoped<IFileUpload, FileUpload>();
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
@@ -49,6 +50,9 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+SeedDatabase();
+
 app.MapRazorPages();
 
 app.MapBlazorHub();
@@ -56,3 +60,12 @@ app.MapFallbackToPage("/_Host");
 app.UseAuthentication(); ;
 
 app.Run();
+
+void SeedDatabase()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+        dbInitializer.Initialize();
+    }
+}
