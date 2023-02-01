@@ -14,6 +14,7 @@ public class HotelRoomController : Controller
     }
 
     [HttpGet]
+    //[Authorize(Roles = CommonFiles.SD.Role_Admin)]
     public async Task<IActionResult> AllGetRooms()
     {
         var allRooms = await _hotelRoomRepository.GetAllHotelRooms();

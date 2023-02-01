@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{40138410-F090-42C3-91B0-C3BB9D80A9C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HiddenVilla.Api", "HiddenVilla.Api\HiddenVilla.Api.csproj", "{E36F26C8-C519-4813-83CA-C0433FF14803}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiddenVilla.Api", "HiddenVilla.Api\HiddenVilla.Api.csproj", "{E36F26C8-C519-4813-83CA-C0433FF14803}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
