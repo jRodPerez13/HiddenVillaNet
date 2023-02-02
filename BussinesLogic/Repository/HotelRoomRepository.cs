@@ -20,34 +20,34 @@ public class HotelRoomRepository : IHotelRoomRepository
     {
         HotelRoom hotelRoom = _mapper.Map<HotelRoomDTO, HotelRoom>(hotelRoomDTO);
         hotelRoom.CreatedDate = DateTime.Now;
-        hotelRoom.UpdatedBy = "";
-        var AddHotelRoom = await _db.HotelRooms.AddAsync(hotelRoom);
+        hotelRoom.CreatedBy = "";
+        var addedHotelRoom = await _db.HotelRooms.AddAsync(hotelRoom);
         await _db.SaveChangesAsync();
-        return _mapper.Map<HotelRoom, HotelRoomDTO>(AddHotelRoom.Entity);
+        return _mapper.Map<HotelRoom, HotelRoomDTO>(addedHotelRoom.Entity);
     }
 
     public async Task<int> DeleteHotelRoom(int roomId)
     {
-
-        HotelRoom roomDetails = await _db.HotelRooms.FindAsync(roomId);
+        var roomDetails = await _db.HotelRooms.FindAsync(roomId);
         if (roomDetails != null)
         {
-            var allImages = await _db.HotelRoomImages.Where(x => x.RoomId == roomId).ToListAsync();
+            var allimages = await _db.HotelRoomImages.Where(x => x.RoomId == roomId).ToListAsync();
 
-            _db.HotelRoomImages.RemoveRange(allImages);
+            _db.HotelRoomImages.RemoveRange(allimages);
             _db.HotelRooms.Remove(roomDetails);
             return await _db.SaveChangesAsync();
         }
         return 0;
     }
 
-    public async Task<IEnumerable<HotelRoomDTO>> GetAllHotelRooms()
+    public async Task<IEnumerable<HotelRoomDTO>> GetAllHotelRooms(string? checkInDateStr, string? checkOutDatestr)
     {
         try
         {
             IEnumerable<HotelRoomDTO> hotelRoomDTOs =
-             _mapper.Map<IEnumerable<HotelRoom>, IEnumerable<HotelRoomDTO>>(
-                 _db.HotelRooms.Include(x => x.HotelRoomImages));
+                        _mapper.Map<IEnumerable<HotelRoom>, IEnumerable<HotelRoomDTO>>
+                        (_db.HotelRooms.Include(x => x.HotelRoomImages));
+
             return hotelRoomDTOs;
         }
         catch (Exception ex)
@@ -56,12 +56,13 @@ public class HotelRoomRepository : IHotelRoomRepository
         }
     }
 
-    public async Task<HotelRoomDTO> GetHotelRoom(int roomId)
+    public async Task<HotelRoomDTO> GetHotelRoom(int roomId, string? checkInDateStr, string? checkOutDatestr)
     {
         try
         {
-            HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>
-                (await _db.HotelRooms.Include(x => x.HotelRoomImages).FirstOrDefaultAsync(x => x.Id == roomId));
+            HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>(
+                await _db.HotelRooms.Include(x => x.HotelRoomImages).FirstOrDefaultAsync(x => x.Id == roomId));
+
             return hotelRoom;
         }
         catch (Exception ex)
@@ -70,21 +71,24 @@ public class HotelRoomRepository : IHotelRoomRepository
         }
     }
 
-    //If unique return null else return the room obj
-    public async Task<HotelRoomDTO> IsRoomUnique(string Name, int roomId = 0)
+    //if unique returns null else returns the room obj
+    public async Task<HotelRoomDTO> IsRoomUnique(string name, int roomId = 0)
     {
         try
         {
             if (roomId == 0)
             {
-                HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>
-                    (await _db.HotelRooms.FirstOrDefaultAsync(x => x.Name.ToLower() == Name.ToLower()));
+                HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>(
+                    await _db.HotelRooms.FirstOrDefaultAsync(x => x.Name.ToLower() == name.ToLower()));
+
                 return hotelRoom;
             }
             else
             {
-                HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>
-                         (await _db.HotelRooms.FirstOrDefaultAsync(x => x.Name.ToLower() == Name.ToLower() && x.Id != roomId));
+                HotelRoomDTO hotelRoom = _mapper.Map<HotelRoom, HotelRoomDTO>(
+                    await _db.HotelRooms.FirstOrDefaultAsync(x => x.Name.ToLower() == name.ToLower()
+                    && x.Id != roomId));
+
                 return hotelRoom;
             }
         }
