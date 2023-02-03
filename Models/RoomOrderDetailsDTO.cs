@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace Models;
-public class RoomOrderDetails
+public class RoomOrderDetailsDTO
 {
     public int Id { get; set; }
     [Required]

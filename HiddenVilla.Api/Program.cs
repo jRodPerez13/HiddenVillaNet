@@ -53,7 +53,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
 builder.Services.AddScoped<IHotelImagesRepository, HotelImagesRepository>();
 builder.Services.AddScoped<IHotelAmenityRepository, HotelAmenityRepository>();
-
+builder.Services.AddScoped<IRoomOrderDetailsRepository, RoomOrderDetailsRepository>();
 
 builder.Services.AddCors(o => o.AddPolicy("HiddenVila", builder =>
 {
