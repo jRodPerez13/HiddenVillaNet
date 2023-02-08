@@ -10,4 +10,5 @@ public interface IHotelRoomRepository
     Task<IEnumerable<HotelRoomDTO>> GetAllHotelRooms(string? checkInDate = null, string? checkOutDate = null);
     Task<HotelRoomDTO> IsRoomUnique(string Name, int roomId = 0);
     Task<int> DeleteHotelRoom(int roomId);
+    Task<bool> IsRoomBooked(int RoomId, string checkInDate, string checkOutDate);
 }
