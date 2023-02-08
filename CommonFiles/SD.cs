@@ -8,6 +8,8 @@ public static class SD //Static Details
 
     public const string Local_InitialBooking = "InitialRoomBookingInfo";
     public const string Local_RoomOrderDetails = "RoomOrderDetails";
+    public const string Local_Token = "JWT Token";
+    public const string Local_UserDetails = "User Details";
 
     public const string Status_Pending = "Pending";
     public const string Status_Booked = "Booked";
