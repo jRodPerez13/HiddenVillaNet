@@ -1,6 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using CommonFiles;
 using HiddenVilla.Client.Service.IService;
+using Microsoft.AspNetCore.Components.Authorization;
 using Models;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
@@ -10,19 +11,23 @@ namespace HiddenVilla.Client.Service;
 
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly HttpClient _httpClient;
+    private readonly HttpClient _client;
     private readonly ILocalStorageService _localStorage;
+    private readonly AuthenticationStateProvider _authStateProvider;
 
-    public AuthenticationService(HttpClient client, ILocalStorageService localStorage)
+    public AuthenticationService(HttpClient client, ILocalStorageService localStorage, AuthenticationStateProvider authStateProvider)
     {
-        _httpClient = client;
+        _client = client;
+        _authStateProvider = authStateProvider;
+        ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
         _localStorage = localStorage;
     }
+
     public async Task<AuthenticationResponseDTO> Login(AuthenticationDTO userFromAuthentication)
     {
         var content = JsonConvert.SerializeObject(userFromAuthentication);
         var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync("api/account/signin", bodyContent);
+        var response = await _client.PostAsync("api/account/signin", bodyContent);
         var contentTemp = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<AuthenticationResponseDTO>(contentTemp);
 
@@ -30,7 +35,8 @@ public class AuthenticationService : IAuthenticationService
         {
             await _localStorage.SetItemAsync(SD.Local_Token, result.Token);
             await _localStorage.SetItemAsync(SD.Local_UserDetails, result.userDTO);
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Token);
+            ((AuthStateProvider)_authStateProvider).NotifyUserLoggedIn(result.Token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Token);
             return new AuthenticationResponseDTO { IsAuthSuccessful = true };
         }
         else
@@ -43,22 +49,22 @@ public class AuthenticationService : IAuthenticationService
     {
         await _localStorage.RemoveItemAsync(SD.Local_Token);
         await _localStorage.RemoveItemAsync(SD.Local_UserDetails);
-        _httpClient.DefaultRequestHeaders.Authorization = null;
+        ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
+        _client.DefaultRequestHeaders.Authorization = null;
     }
 
-    public async Task<RegistrationResponseDTO> RegisterUser(UserRequestDTO userForRegistration)
+    public async Task<RegistrationResponseDTO> RegisterUser(UserRequestDTO userForRegisteration)
     {
-        var content = JsonConvert.SerializeObject(userForRegistration);
+        var content = JsonConvert.SerializeObject(userForRegisteration);
         var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync("api/account/signup", bodyContent);
+        var response = await _client.PostAsync("api/account/signup", bodyContent);
         var contentTemp = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<RegistrationResponseDTO>(contentTemp);
+
         if (response.IsSuccessStatusCode)
         {
-            return new RegistrationResponseDTO
-            {
-                IsRegistrationSuccessful = true
-            };
+
+            return new RegistrationResponseDTO { IsRegistrationSuccessful = true };
         }
         else
         {
