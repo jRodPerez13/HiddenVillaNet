@@ -2,11 +2,12 @@
 @using Blazored.LocalStorage;
 @using CommonFiles;
 @using HiddenVilla.Client.Service.IService;
+@using Microsoft.AspNetCore.Authorization;
 @using Models;
 @inject ILocalStorageService localStorage
 @inject IRoomOrderDetailsService roomOrderDetailService
 
-
+@attribute [Authorize(Roles=SD.Role_Customer)]
 <div class="container">
     @if (!IsPaymentComplete)
     {
