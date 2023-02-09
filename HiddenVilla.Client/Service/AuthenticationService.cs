@@ -41,11 +41,28 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task Logout()
     {
-        throw new NotImplementedException();
+        await _localStorage.RemoveItemAsync(SD.Local_Token);
+        await _localStorage.RemoveItemAsync(SD.Local_UserDetails);
+        _httpClient.DefaultRequestHeaders.Authorization = null;
     }
 
-    public async Task<RegistrationResponseDTO> RegisterUser(UserRequestDTO userForRegisteration)
+    public async Task<RegistrationResponseDTO> RegisterUser(UserRequestDTO userForRegistration)
     {
-        throw new NotImplementedException();
+        var content = JsonConvert.SerializeObject(userForRegistration);
+        var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync("api/account/signup", bodyContent);
+        var contentTemp = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<RegistrationResponseDTO>(contentTemp);
+        if (response.IsSuccessStatusCode)
+        {
+            return new RegistrationResponseDTO
+            {
+                IsRegistrationSuccessful = true
+            };
+        }
+        else
+        {
+            return result;
+        }
     }
 }
