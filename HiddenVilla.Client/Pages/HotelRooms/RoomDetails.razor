@@ -29,16 +29,29 @@ else
 
                 <div class="row">
                     <div class="col-6">
-                        <div id="" class="carousel slide mb-4 m-md-3 m-0 pt-3 pt-md-0" data-ride="carousel">
+                        <div class="carousel slide mb-4 m-md-3 m-0 pt-3 pt-md-0" data-ride="carousel">
                             <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                                 <ol class="carousel-indicators">
-                                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                                    @{
+                                        int imageIndex = 0;
+                                    }
+                                    @foreach (var image in HotelBooking.OrderDetails.HotelRoomDTO.HotelRoomImages)
+                                    {
+                                        <li data-target="#carouselExampleIndicators" data-slide-to="@imageIndex" class="@(imageIndex == 0 ? "active" : "")"></li>
+                                        imageIndex++;
+                                    }
                                 </ol>
                                 <div class="carousel-inner">
-                                    <div class="carousel-item active">
-                                        <img class="d-block w-100" src="images/slide1.jpg" alt="First slide">
-                                    </div>
+                                    @{
+                                        int innerImageIndex = 0;
+                                    }
+                                    @foreach (var image in HotelBooking.OrderDetails.HotelRoomDTO.HotelRoomImages)
+                                    {
+                                        <div class="carousel-item @(innerImageIndex == 0 ? "active" : "")">
+                                            <img class="d-block w-100" style="border-radius:20px;" src="@image.RoomImageUrl" alt="@(innerImageIndex + 1) slide">
+                                        </div>
+                                        innerImageIndex++;
+                                    }
                                 </div>
                                 <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -135,6 +148,7 @@ else
     </div>
 }
 
+
 @code {
     [Parameter]
     public int Id { get; set; }
@@ -213,7 +227,7 @@ else
                 {
                     Amount = Convert.ToInt32(HotelBooking.OrderDetails.HotelRoomDTO.TotalAmount * 100),
                     ProductName = HotelBooking.OrderDetails.HotelRoomDTO.Name,
-                    ReturnUrl = "/hotel/room-details/" + Id
+                    ReturnUrl = "/hotel/room/" + Id
                 };
 
             var result = await stripePaymentService.CheckOut(paymentDTO);
