@@ -78,7 +78,7 @@ builder.Services.AddControllers().AddJsonOptions(
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "HiddenVilla.Api", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "HiddenVilla.Api", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -105,11 +105,19 @@ var app = builder.Build();
 
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["ApiKey"];
 
+app.UseSwagger(c =>
+{
+    c.SerializeAsV2 = true;
+});
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("./swagger/v1/swagger.json", "HiddenVilla.Api v1");
+    c.RoutePrefix = string.Empty;
+});
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+
 }
 
 app.UseHttpsRedirection();

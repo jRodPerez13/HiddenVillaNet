@@ -6,7 +6,7 @@
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
 
-
+@attribute [Authorize(Roles = CommonFiles.SD.Role_Admin)]
 @if (!IsLoading)
 {
     <h4 class="card-title text-info">Hotel Room Order's</h4>
