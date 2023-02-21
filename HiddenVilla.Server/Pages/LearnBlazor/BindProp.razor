@@ -1,0 +1,23 @@
+@page "/bindprop"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage localStorage
+@inject ProtectedSessionStorage sessionStorage
+
+
+<p>Counter Value from other Page (Session) : @CounterSession</p>
+<p>Counter Value from other Page (Local) : @CounterLocal</p>
+
+@code {
+
+    public int CounterLocal { get; set; }
+    public int CounterSession { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resultLocal = await localStorage.GetAsync<int>("counterLocal");
+        CounterLocal = resultLocal.Success ? resultLocal.Value : 0;
+
+        var resultSession = await sessionStorage.GetAsync<int>("counterSession");
+        CounterSession = resultSession.Success ? resultSession.Value : 0;
+    }
+}

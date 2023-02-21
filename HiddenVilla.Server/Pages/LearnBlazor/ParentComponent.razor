@@ -1,0 +1,45 @@
+﻿@page "/ParentComponent"
+@using HiddenVilla.Server.Pages.LearnBlazor.BlazorComponent;
+
+<h3 class="text-danger">Parent Child Component</h3>
+
+<CascadingValue Value="@messageForGrandChild" Name="MessageFromGrandParent">
+    <CascadingValue Value="@luckyNumber" Name="GrandParentsLuckyNumber">
+        
+        <ChildComponent @ref="childComp"
+                        OnClickBtnMethod="ShowMessage"
+                        Title="This title is passed as parameter from Parent Component">
+
+            @*Render Fragment from Parent! WooHOO!!!*@
+
+            @*<ChildContent>Render Fragment from Parent! WooHOO!!!</ChildContent>*@
+            <DangerChildContent>Danger content from Render Fragment! WooHOO!!!</DangerChildContent>
+        </ChildComponent>
+        
+    </CascadingValue>
+</CascadingValue>
+
+@*<ChildComponent Title="This second Child Component"></ChildComponent>*@
+
+<AnotherChildComponent placeholder="Placeholder default"></AnotherChildComponent>
+<p>
+    <b>@messageText</b>
+</p>
+
+<div class="row">
+    <button class="btn btn-success" @onclick="()=>childComp.ShowToastrSuccess()">Show Alert</button>
+</div>
+
+@code {
+    private ChildComponent childComp;
+
+    private string messageForGrandChild = "This is a message from Grand Parent CascadingParameter";
+    public string luckyNumber { get; set; } = "7";
+    private string messageText = "";
+
+    private void ShowMessage(MouseEventArgs e)
+    {
+        messageText = "Blazzing text from parent!";
+    }
+
+}

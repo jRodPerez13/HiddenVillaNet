@@ -8,3 +8,18 @@
 @using Microsoft.JSInterop
 @using HiddenVilla.Server
 @using HiddenVilla.Server.Shared
+
+@using Blazored.TextEditor;
+@using BussinesLogic.Repository;
+@using BussinesLogic.Repository.IRepository;
+@using HiddenVilla.Server.Helper;
+@*@using HiddenVilla.Server.Service;
+@using HiddenVilla.Server.Service.IService;*@
+@using Models
+@inject IHotelRoomRepository HotelRoomRepository
+@inject IHotelImagesRepository HotelImagesRepository
+@inject IHotelAmenityRepository HotelAmenityRepository
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+@inject HiddenVilla.Server.Service.IService.IFileUpload FileUpload
+@using Radzen.Blazor
